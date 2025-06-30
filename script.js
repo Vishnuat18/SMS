@@ -1,3 +1,15 @@
+let students = [];
+
+window.onload = function () {
+    const data = localStorage.getItem("students");
+    if (data) {
+        students = JSON.parse(data);
+    }
+    populateStudentTable();
+    populateGradeTable();
+    showSection("studentList");
+};
+
 document.getElementById("enrollmentForm").addEventListener("submit", function(event) {
     event.preventDefault(); 
 
@@ -14,6 +26,8 @@ document.getElementById("enrollmentForm").addEventListener("submit", function(ev
     };
 
     students.push(student);
+    alert(student.name + " was enrolled successfully");
+    localStorage.setItem("students", JSON.stringify(students));
     populateStudentTable();
     populateGradeTable();
     document.getElementById("enrollment").style.display = "none"; 
@@ -34,8 +48,6 @@ function showSection(sectionId) {
     document.getElementById(sectionId).style.display = "block";
 }
 
-let students = [];
-
 function populateStudentTable() {
     let tbody = document.querySelector("#studentsTable tbody");
     tbody.innerHTML = "";
@@ -46,7 +58,6 @@ function populateStudentTable() {
         <td>${calculateAge(student.dob)}</td><td>${student.bloodGroup}</td><td>${student.address}</td>
         <td>${student.contact}</td><td>${student.email}</td>`;
         tbody.appendChild(row);
-        alert(name +" Was enrolled successfully")
     });
 }
 
@@ -76,6 +87,7 @@ function updateGrade(input, index) {
 
 function saveGrade(index) {
     alert(`Grade for ${students[index].name} saved successfully!`);
+    localStorage.setItem("students", JSON.stringify(students));
 }
 
 function searchStudents() {
@@ -83,7 +95,11 @@ function searchStudents() {
     let tbody = document.querySelector("#studentsTable tbody");
     tbody.innerHTML = "";
 
-    students.filter(student => student.name.toLowerCase().includes(query)).forEach(student => {
+    let filtered = query
+        ? students.filter(student => student.name.toLowerCase().includes(query))
+        : students;
+
+    filtered.forEach(student => {
         let row = document.createElement("tr");
         row.innerHTML = `<td>${student.name}</td><td>${student.fatherName}</td><td>${student.gender}</td>
         <td>${calculateAge(student.dob)}</td><td>${student.bloodGroup}</td><td>${student.address}</td>
@@ -91,5 +107,3 @@ function searchStudents() {
         tbody.appendChild(row);
     });
 }
-
-populateStudentTable();
